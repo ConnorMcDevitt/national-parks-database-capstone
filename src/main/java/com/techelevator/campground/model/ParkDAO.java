@@ -1,5 +1,5 @@
 package com.techelevator.campground.model;
 
-public class ParkDAO {
+public interface ParkDAO {
 
 }

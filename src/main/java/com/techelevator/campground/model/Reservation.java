@@ -3,48 +3,61 @@ package com.techelevator.campground.model;
 import java.time.LocalDate;
 
 public class Reservation {
-	private long reservation_id;
-	private long site_id;
+	private Long reservationId;
+	private Long siteId;
 	private String name; 
-	private LocalDate from_date;
-	private LocalDate to_date;
-	private LocalDate create_date;
-	public long getReservation_id() {
-		return reservation_id;
+	private LocalDate fromDate;
+	private LocalDate toDate;
+	private LocalDate createDate;
+	
+	public Long getReservationId() {
+		return reservationId;
 	}
-	public void setReservation_id(long reservation_id) {
-		this.reservation_id = reservation_id;
+
+	public void setReservationId(Long reservationId) {
+		this.reservationId = reservationId;
 	}
-	public long getSite_id() {
-		return site_id;
+
+	public Long getSiteId() {
+		return siteId;
 	}
-	public void setSite_id(long site_id) {
-		this.site_id = site_id;
+
+	public void setSiteId(Long siteId) {
+		this.siteId = siteId;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public LocalDate getFrom_date() {
-		return from_date;
+
+	public LocalDate getFromDate() {
+		return fromDate;
 	}
-	public void setFrom_date(LocalDate from_date) {
-		this.from_date = from_date;
+
+	public void setFromDate(LocalDate fromDate) {
+		this.fromDate = fromDate;
 	}
-	public LocalDate getTo_date() {
-		return to_date;
+
+	public LocalDate getToDate() {
+		return toDate;
 	}
-	public void setTo_date(LocalDate to_date) {
-		this.to_date = to_date;
+
+	public void setToDate(LocalDate toDate) {
+		this.toDate = toDate;
 	}
-	public LocalDate getCreate_date() {
-		return create_date;
+
+	public LocalDate getCreateDate() {
+		return createDate;
 	}
-	public void setCreate_date(LocalDate create_date) {
-		this.create_date = create_date;
+
+	public void setCreateDate(LocalDate createDate) {
+		this.createDate = createDate;
 	}
+
 	public String toString(){
 		return this.name;
 	}

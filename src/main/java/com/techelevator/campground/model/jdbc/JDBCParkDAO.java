@@ -25,7 +25,7 @@ public class JDBCParkDAO implements ParkDAO {
 		
 		String sqlAvailableParks = "SELECT * FROM park "
 //				+ "JOIN campground ON park.park_id = campground.park_id "
-				+ "ORDER BY park.name "
+				+ "ORDER BY name"
 //				+ "JOIN sites ON campground.campground_id = sites.campground_id "  Want to add in the ability to ignore parks with no available reservation dates!
 //				+ "JOIN reservation ON sites.site_id = reservation.site_id "
 				/*+ "WHERE campground.open_to_mm > NOW()"*/;
@@ -63,7 +63,7 @@ public class JDBCParkDAO implements ParkDAO {
 		park.setParkId(results.getLong("park_id"));
 		park.setName(results.getString("name"));
 		park.setLocation(results.getString("location"));
-		park.setEstablishedDate(results.getDate("establishDate").toLocalDate());
+		park.setEstablishedDate(results.getDate("establish_date").toLocalDate());
 		park.setArea(results.getLong("area"));
 		park.setVisitors(results.getLong("visitors"));
 		park.setDescription(results.getString("description"));

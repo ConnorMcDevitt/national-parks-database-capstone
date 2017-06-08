@@ -8,8 +8,8 @@ public class Campground {
 	private Long campgroundId;
 	private Long parkId;
 	private String name;
-	private LocalDate openingDate;
-	private LocalDate closingDate;
+	private String openingDate;
+	private String closingDate;
 	private BigDecimal dailyFee;
 	
 	public Long getCampgroundId() {
@@ -36,19 +36,19 @@ public class Campground {
 		this.name = name;
 	}
 	
-	public LocalDate getOpeningDate() {
+	public String getOpeningDate() {
 		return openingDate;
 	}
 	
-	public void setOpeningDate(LocalDate openingDate) {
+	public void setOpeningDate(String openingDate) {
 		this.openingDate = openingDate;
 	}
 	
-	public LocalDate getClosingDate() {
+	public String getClosingDate() {
 		return closingDate;
 	}
 	
-	public void setClosingDate(LocalDate closingDate) {
+	public void setClosingDate(String closingDate) {
 		this.closingDate = closingDate;
 	}
 	

@@ -42,8 +42,8 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 		campground.setCampgroundId(results.getLong("campground_id"));
 		campground.setParkId(results.getLong("park_id"));
 		campground.setName(results.getString("name"));
-		campground.setOpeningDate(results.getDate("open_from_mm").toLocalDate());
-		campground.setClosingDate(results.getDate("open_to_mm").toLocalDate());
+		campground.setOpeningDate(results.getString("open_from_mm"));
+		campground.setClosingDate(results.getString("open_to_mm"));
 		campground.setDailyFee(results.getBigDecimal("daily_fee"));
 		return campground;
 	}

@@ -3,6 +3,8 @@ package com.techelevator.campground.view;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Menu {
@@ -40,7 +42,13 @@ public class Menu {
 		}
 		return choice;
 	}
-	
+	public LocalDate getDateFromUser(){
+		String userInput = in.nextLine();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+		LocalDate date =  LocalDate.parse(userInput, formatter);
+		return date;
+	}
 	private void displayMenuOptions(Object[] options) {
 		out.println();
 		for(int i = 0; i < options.length; i++) {

@@ -1,5 +1,6 @@
 package com.techelevator.campground.model.jdbc;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import com.techelevator.campground.model.Reservation;
 import com.techelevator.campground.model.ReservationDAO;
+import com.techelevator.campground.model.Site;
 
 public class JDBCReservationDAO implements ReservationDAO {
 	
@@ -20,9 +22,9 @@ public class JDBCReservationDAO implements ReservationDAO {
 	}
 
 	@Override
-	public List<Reservation> getReservations(Long siteId) {
+	public List<Reservation> getReservations(Site site) {
 		List<Reservation> listOfReservations = new ArrayList<>();
-		
+		Long siteId = site.getSiteId();
 		String sqlAvailableReservations = "SELECT * FROM reservation "
 				+ "WHERE site_id = ?";
 		
@@ -35,6 +37,10 @@ public class JDBCReservationDAO implements ReservationDAO {
 		
 		return listOfReservations;
 	}
+
+
+
+	
 	
 	private Reservation mapRowToReservation(SqlRowSet results) {
 		
@@ -50,5 +56,6 @@ public class JDBCReservationDAO implements ReservationDAO {
 		
 		return reservation;
 	}
+	
 
 }

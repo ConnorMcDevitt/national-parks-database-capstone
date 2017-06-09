@@ -1,5 +1,6 @@
 package com.techelevator.campground.model.jdbc;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
+import com.techelevator.campground.model.Reservation;
 import com.techelevator.campground.model.Site;
 import com.techelevator.campground.model.SiteDAO;
 
@@ -19,21 +21,44 @@ public class JDBCSiteDAO implements SiteDAO {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 	
-	@Override
-	public List<Site> getAvailableSites(String campgroundId) {
-		List<Site> listOfSites = new ArrayList<>();
+//	@Override
+//	public List<Site> getAvailableSites(String campgroundId) {
+//		List<Site> listOfSites = new ArrayList<>();
+//		
+//		String sqlAvailableSites = "SELECT * FROM site "
+//				+ "WHERE campground_id = ?";
+//		
+//		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlAvailableSites, campgroundId);
+//		
+//		while(results.next()) {
+//			Site site = mapRowToSite(results);
+//			listOfSites.add(site);
+//		}	
+//		
+//		return listOfSites;
+//	}
+	public List<Site> getAvailableSites(Long campgroundId, LocalDate arrivalDate, LocalDate departureDate){
+		List<Site> availableSites = new ArrayList<>();
 		
-		String sqlAvailableSites = "SELECT * FROM site "
-				+ "WHERE campground_id = ?";
-		
-		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlAvailableSites, campgroundId);
-		
+
+		String sqlAvailableSites = "SELECT * FROM site WHERE campground_id = ? AND site_id NOT IN (SELECT site.site_id  "
+				+ "FROM reservation "
+				+ "JOIN site ON site.site_id = reservation.site_id "
+				+ "JOIN campground ON campground.campground_id = site.campground_id "
+				+ "WHERE site.campground_id = ? "
+				+ "AND ((?  BETWEEN reservation.from_date AND reservation.to_date)  "
+						+ " OR (?  BETWEEN reservation.from_date AND reservation.to_date) "
+						+ "OR (reservation.from_date BETWEEN ? AND ?) "
+						+ "OR (reservation.to_date BETWEEN ? AND ?))) "
+						+ " LIMIT 5; )"; 
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlAvailableSites, campgroundId, campgroundId, 
+				arrivalDate, departureDate, arrivalDate, departureDate,arrivalDate, departureDate) ;
 		while(results.next()) {
 			Site site = mapRowToSite(results);
-			listOfSites.add(site);
+			availableSites.add(site);
 		}	
 		
-		return listOfSites;
+		return availableSites;
 	}
 	
 	private Site mapRowToSite(SqlRowSet results) {

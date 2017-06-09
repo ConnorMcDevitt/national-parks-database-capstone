@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import com.techelevator.campground.model.Campground;
 import com.techelevator.campground.model.CampgroundDAO;
+import com.techelevator.campground.model.Park;
 
 public class JDBCCampgroundDAO implements CampgroundDAO {
 
@@ -20,8 +21,9 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 	}
 	
 	@Override
-	public List<Campground> getAvailableCampgrounds(Long parkId) {
+	public List<Campground> getAvailableCampgrounds(Park park) {
 		List<Campground> listOfCampgrounds = new ArrayList<>();
+		Long parkId = park.getParkId();
 		
 		String sqlAvailableCampgrounds = "SELECT * FROM campground "
 				+ "WHERE park_id = ?";

@@ -24,11 +24,7 @@ public class JDBCParkDAO implements ParkDAO {
 		List<Park> listOfParks = new ArrayList<>();
 		
 		String sqlAvailableParks = "SELECT * FROM park "
-//				+ "JOIN campground ON park.park_id = campground.park_id "
-				+ "ORDER BY name"
-//				+ "JOIN sites ON campground.campground_id = sites.campground_id "  Want to add in the ability to ignore parks with no available reservation dates!
-//				+ "JOIN reservation ON sites.site_id = reservation.site_id "
-				/*+ "WHERE campground.open_to_mm > NOW()"*/;
+				+ "ORDER BY name";
 		
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlAvailableParks);
 		

@@ -2,7 +2,6 @@ package com.techelevator;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import javax.sql.DataSource;
@@ -42,7 +41,7 @@ public class CampgroundCLI {
 
 	public static void main(String[] args) {
 		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setUrl("jdbc:postgresql://localhost:5432/campgroundtest");
+		dataSource.setUrl("jdbc:postgresql://localhost:5432/testdb");
 		dataSource.setUsername("postgres");
 		dataSource.setPassword("postgres1");
 
@@ -98,7 +97,8 @@ public class CampgroundCLI {
 				handleViewCampground(park);
 				campgroundmenu(park);
 			} else if (choice.equals(PARK_MENU_OPTION_SEARCH_RESERVATION)) {
-				handleReservationSearch();
+				System.out.println();
+				System.out.println("This function is a bonus functionality and is not yet implemented.");
 			} else if (choice.equals(PARK_MENU_OPTION_RETURN)) {
 				break;
 
@@ -162,13 +162,13 @@ public class CampgroundCLI {
 
 		private void handleViewSites(Campground campground, LocalDate arrivalDate, LocalDate departureDate){
 			StringBuilder siteString = new StringBuilder();
-			Long campgroundId = campground.getCampgroundId();
+//			Long campgroundId = campground.getCampgroundId();
 			Long daysBetween = ChronoUnit.DAYS.between(arrivalDate, departureDate);
 			BigDecimal daysBetweens = new BigDecimal(daysBetween);
 			siteString.append(String.format("%-9s %-13s %-13s %-13s %-13s %s", "Site No.", "Max Occup.", "Accesible?", "Max RV Length", "Utility" ,"Cost" +"\n"));
-			for(int i = 0; i < siteDAO.getAvailableSites(campgroundId,arrivalDate, departureDate).size(); i++) {
+			for(int i = 0; i < siteDAO.getAvailableSites(campground ,arrivalDate, departureDate).size(); i++) {
 				Site site = new Site();
-				site = siteDAO.getAvailableSites(campgroundId,arrivalDate,departureDate).get(i);
+				site = siteDAO.getAvailableSites(campground , arrivalDate, departureDate).get(i);
 				siteString.append(String.format("%-9s %-13s %-13s %-13s %-13s %s", site.getSiteId(), site.getMaxOccupancy(),
 						site.isAccessibleToString(site.isAccessible()), site.maxRVToString(site.getMaxRvLength()),
 						site.isUtilitiesToString(site.isUtilities()), "$"+(campground.getDailyFee().multiply(daysBetweens))+  "\n"));
@@ -196,11 +196,6 @@ public class CampgroundCLI {
 			}		
 			System.out.println(campgrounds);
 
-
-		}
-
-		private void handleReservationSearch() {
-			// TODO Auto-generated method stub
 
 		}
 
@@ -242,9 +237,9 @@ public class CampgroundCLI {
 			return campgroundDisplay;
 		}
 		private Site[] siteDisplayOptionsInterface(Campground campground, LocalDate arrivalDate, LocalDate departureDate) {
-			Site[] siteDisplay = new Site[siteDAO.getAvailableSites(campground.getCampgroundId(), arrivalDate, departureDate).size()];
-			for(int i = 0; i < siteDAO.getAvailableSites(campground.getCampgroundId(), arrivalDate, departureDate).size(); i++) {
-				siteDisplay[i] = siteDAO.getAvailableSites(campground.getCampgroundId(), arrivalDate, departureDate).get(i);
+			Site[] siteDisplay = new Site[siteDAO.getAvailableSites(campground, arrivalDate, departureDate).size()];
+			for(int i = 0; i < siteDAO.getAvailableSites(campground, arrivalDate, departureDate).size(); i++) {
+				siteDisplay[i] = siteDAO.getAvailableSites(campground, arrivalDate, departureDate).get(i);
 			}
 			return siteDisplay;
 		}

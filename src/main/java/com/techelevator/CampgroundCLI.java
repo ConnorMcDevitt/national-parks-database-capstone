@@ -1,7 +1,9 @@
 package com.techelevator;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import javax.sql.DataSource;
 
@@ -40,7 +42,7 @@ public class CampgroundCLI {
 
 	public static void main(String[] args) {
 		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setUrl("jdbc:postgresql://localhost:5432/campground");
+		dataSource.setUrl("jdbc:postgresql://localhost:5432/campgroundtest");
 		dataSource.setUsername("postgres");
 		dataSource.setPassword("postgres1");
 
@@ -111,129 +113,156 @@ public class CampgroundCLI {
 			while(true){
 				handleViewCampground(park);
 				System.out.println("Which campground(enter 0 to cancel)?");
+				Integer input = menu.getInputNumberFromUser();
 				Campground[] campgroundchoices = campgroundDisplayOptionsInterface(park);
-				Campground campgroundchoice = (Campground)menu.getChoiceFromOptions(campgroundchoices);
-				int numberChoice = 0;
-				for(int i = 0; i < campgroundchoices.length; i++) {
-					if(campgroundchoices[i].getName().equals(campgroundchoice.getName())) {
-						numberChoice = i;
-					}
+				Campground campgroundchoice = new Campground();
+				if(input == 0){
+					break;
+				} else if (input <= campgroundchoices.length) {
+					campgroundchoice = campgroundchoices[input];
 				}
 				System.out.println("What is the arrival date?");
 				LocalDate arrivalDate = (LocalDate)menu.getDateFromUser();
 				System.out.println("What is the departure date?");
 				LocalDate departureDate = (LocalDate)menu.getDateFromUser();
-				if(numberChoice == 0){
+
+				handleViewSites(campgroundchoice, arrivalDate, departureDate);
+
+				System.out.println();
+				System.out.println("Which site should be reserved (enter 0 to cancel)?");
+				Site[] siteChoices = siteDisplayOptionsInterface(campgroundchoice, arrivalDate, departureDate);
+				Site siteChoice = new Site();
+				input = menu.getInputNumberFromUser();
+				if(input == 0){
 					break;
-				}
-				else {
-					Campground campground = campgroundchoices[numberChoice];
-					handleViewSites(campground, arrivalDate, departureDate);
-						
+				} else { 
+					for(Site site : siteChoices) {
+						if(site.getSiteId() == (long)input) {
+							siteChoice = site;
+						}
 					}
-				
+				}
+
+					System.out.println("What name should the reservation be made under?");
+					String nameInput = menu.getReservationName();
+					reservationDAO.bookReservation(siteChoice, arrivalDate, departureDate, nameInput);
+					Long reservationId = reservationDAO.getBookedReservation(siteChoice, arrivalDate, departureDate, nameInput).getReservationId();
+					System.out.println();
+					System.out.println("The reservation has been made and the confirmation id is " + reservationId);
+
+
+
+				}
+
 			}
+			else if( choice.equals(CAMPGROUND_MENU_OPTION_RETURN)){
 
-		}
-		else if( choice.equals(CAMPGROUND_MENU_OPTION_RETURN)){
-
-		}
-	}
-
-	private void handleViewSites(Campground campground, LocalDate arrivalDate, LocalDate departureDate){
-		StringBuilder siteString = new StringBuilder();
-		Long campgroundId = campground.getCampgroundId();
-		siteString.append(String.format("%-5s %-25s %-13s %-13s %s", "", "Name", "Open", "Close", "Daily Fee" + "\n"));
-		for(int i = 0; i < siteDAO.getAvailableSites(campgroundId,arrivalDate, departureDate).size(); i++) {
-			Site site = new Site();
-			site = siteDAO.getAvailableSites(campgroundId,arrivalDate,departureDate).get(i);
-			siteString.append(String.format("%-5s %-25s %-13s %-13s %s", site.getSiteId(), site.getMaxOccupancy(),
-					site.isAccessible(), site.getMaxRvLength(), site.isUtilities(), "$" +  "\n"));
-		}		
-		System.out.println(siteString);
-		
-	}
-	private void handleViewCampground(Park park) {
-		Park currentPark = new Park();
-		for(int i = 0; i < parkDAO.getAllAvailableParks().size(); i++) {
-			if(parkDAO.getAllAvailableParks().get(i).getParkId().equals(park.getParkId())) {
-				currentPark = parkDAO.getAllAvailableParks().get(i);
 			}
 		}
-		System.out.println(currentPark.getName() + " National Park Campgrounds");
-		System.out.println();
 
-		StringBuilder campgrounds = new StringBuilder();
-		campgrounds.append(String.format("%-5s %-25s %-13s %-13s %s", "", "Name", "Open", "Close", "Daily Fee" + "\n"));
-		for(int i = 0; i < campgroundDAO.getAvailableCampgrounds(park).size(); i++) {
-			Campground camp = new Campground();
-			camp = campgroundDAO.getAvailableCampgrounds(park).get(i);
-			campgrounds.append(String.format("%-5s %-25s %-13s %-13s %s", "#" + (i+1), camp.getName(),
-					camp.getOpeningDate(), camp.getClosingDate(), "$" + camp.getDailyFee() + "\n"));
-		}		
-		System.out.println(campgrounds);
+		private void handleViewSites(Campground campground, LocalDate arrivalDate, LocalDate departureDate){
+			StringBuilder siteString = new StringBuilder();
+			Long campgroundId = campground.getCampgroundId();
+			Long daysBetween = ChronoUnit.DAYS.between(arrivalDate, departureDate);
+			BigDecimal daysBetweens = new BigDecimal(daysBetween);
+			siteString.append(String.format("%-9s %-13s %-13s %-13s %-13s %s", "Site No.", "Max Occup.", "Accesible?", "Max RV Length", "Utility" ,"Cost" +"\n"));
+			for(int i = 0; i < siteDAO.getAvailableSites(campgroundId,arrivalDate, departureDate).size(); i++) {
+				Site site = new Site();
+				site = siteDAO.getAvailableSites(campgroundId,arrivalDate,departureDate).get(i);
+				siteString.append(String.format("%-9s %-13s %-13s %-13s %-13s %s", site.getSiteId(), site.getMaxOccupancy(),
+						site.isAccessibleToString(site.isAccessible()), site.maxRVToString(site.getMaxRvLength()),
+						site.isUtilitiesToString(site.isUtilities()), "$"+(campground.getDailyFee().multiply(daysBetweens))+  "\n"));
+			}		
+			System.out.println(siteString);
 
-
-	}
-
-	private void handleReservationSearch() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void displayParkInfo(int userChoice) {
-
-		Park selectedPark = parkDAO.getAllAvailableParks().get(userChoice);
-
-		StringBuilder info = new StringBuilder();
-		info.append(String.format("%-18s %s", "Location: ", selectedPark.getLocation()  + "\n"));
-		info.append(String.format("%-18s %s", "Established: ", selectedPark.getEstablishedDate().toString()  + "\n"));
-		info.append(String.format("%-18s %s", "Area: ", selectedPark.getArea().toString()  + " sq km\n"));
-		info.append(String.format("%-18s %s", "Annual Visitors: ", selectedPark.getVisitors().toString()  + "\n"));
-
-		System.out.println(info);
-		System.out.println();
-
-		StringBuilder description = new StringBuilder(selectedPark.getDescription());
-		int i = 0;
-		while ((i = description.indexOf(" ", i + 60)) != -1) {
-			description.replace(i, i + 1, "\n");
 		}
-		System.out.println(description.toString());
-	}
+		private void handleViewCampground(Park park) {
+			Park currentPark = new Park();
+			for(int i = 0; i < parkDAO.getAllAvailableParks().size(); i++) {
+				if(parkDAO.getAllAvailableParks().get(i).getParkId().equals(park.getParkId())) {
+					currentPark = parkDAO.getAllAvailableParks().get(i);
+				}
+			}
+			System.out.println(currentPark.getName() + " National Park Campgrounds");
+			System.out.println();
 
-	private String[] parkDisplayOptionsInterface() {
-		String[] parkDisplay = new String[parkDAO.getAllAvailableParks().size() + 1];
-		for(int i = 0; i < parkDAO.getAllAvailableParks().size(); i++) {
-			parkDisplay[i] = parkDAO.getAllAvailableParks().get(i).getName();
+			StringBuilder campgrounds = new StringBuilder();
+			campgrounds.append(String.format("%-5s %-25s %-13s %-13s %s", "", "Name", "Open", "Close", "Daily Fee" + "\n"));
+			for(int i = 0; i < campgroundDAO.getAvailableCampgrounds(park).size(); i++) {
+				Campground camp = new Campground();
+				camp = campgroundDAO.getAvailableCampgrounds(park).get(i);
+				campgrounds.append(String.format("%-5s %-25s %-13s %-13s %s", "#" + (i+1), camp.getName(),
+						camp.getOpeningDate(), camp.getClosingDate(), "$" + camp.getDailyFee() + "\n"));
+			}		
+			System.out.println(campgrounds);
+
+
 		}
-		parkDisplay[parkDAO.getAllAvailableParks().size()] = "Quit";
-		return parkDisplay;
-	}
 
-	private Campground[] campgroundDisplayOptionsInterface(Park park) {
-		Campground[] campgroundDisplay = new Campground[campgroundDAO.getAvailableCampgrounds(park).size() + 1];
-		for(int i = 0; i < campgroundDAO.getAvailableCampgrounds(park).size(); i++) {
-			campgroundDisplay[i] = campgroundDAO.getAvailableCampgrounds(park).get(i);
+		private void handleReservationSearch() {
+			// TODO Auto-generated method stub
+
 		}
-		return campgroundDisplay;
-	}
 
-	private void printHeading(String headingText) {
-		System.out.println("\n"+headingText);
-		for(int i = 0; i < headingText.length(); i++) {
-			System.out.print("-");
+		private void displayParkInfo(int userChoice) {
+
+			Park selectedPark = parkDAO.getAllAvailableParks().get(userChoice);
+
+			StringBuilder info = new StringBuilder();
+			info.append(String.format("%-18s %s", "Location: ", selectedPark.getLocation()  + "\n"));
+			info.append(String.format("%-18s %s", "Established: ", selectedPark.getEstablishedDate().toString()  + "\n"));
+			info.append(String.format("%-18s %s", "Area: ", selectedPark.getArea().toString()  + " sq km\n"));
+			info.append(String.format("%-18s %s", "Annual Visitors: ", selectedPark.getVisitors().toString()  + "\n"));
+
+			System.out.println(info);
+			System.out.println();
+
+			StringBuilder description = new StringBuilder(selectedPark.getDescription());
+			int i = 0;
+			while ((i = description.indexOf(" ", i + 60)) != -1) {
+				description.replace(i, i + 1, "\n");
+			}
+			System.out.println(description.toString());
 		}
-		System.out.println();
+
+		private String[] parkDisplayOptionsInterface() {
+			String[] parkDisplay = new String[parkDAO.getAllAvailableParks().size() + 1];
+			for(int i = 0; i < parkDAO.getAllAvailableParks().size(); i++) {
+				parkDisplay[i] = parkDAO.getAllAvailableParks().get(i).getName();
+			}
+			parkDisplay[parkDAO.getAllAvailableParks().size()] = "Quit";
+			return parkDisplay;
+		}
+
+		private Campground[] campgroundDisplayOptionsInterface(Park park) {
+			Campground[] campgroundDisplay = new Campground[campgroundDAO.getAvailableCampgrounds(park).size()];
+			for(int i = 0; i < campgroundDAO.getAvailableCampgrounds(park).size(); i++) {
+				campgroundDisplay[i] = campgroundDAO.getAvailableCampgrounds(park).get(i);
+			}
+			return campgroundDisplay;
+		}
+		private Site[] siteDisplayOptionsInterface(Campground campground, LocalDate arrivalDate, LocalDate departureDate) {
+			Site[] siteDisplay = new Site[siteDAO.getAvailableSites(campground.getCampgroundId(), arrivalDate, departureDate).size()];
+			for(int i = 0; i < siteDAO.getAvailableSites(campground.getCampgroundId(), arrivalDate, departureDate).size(); i++) {
+				siteDisplay[i] = siteDAO.getAvailableSites(campground.getCampgroundId(), arrivalDate, departureDate).get(i);
+			}
+			return siteDisplay;
+		}
+		private void printHeading(String headingText) {
+			System.out.println("\n"+headingText);
+			for(int i = 0; i < headingText.length(); i++) {
+				System.out.print("-");
+			}
+			System.out.println();
+		}
+
+
+		private void displayBanner() {
+
+			System.out.println(" __  _   ____  _____  _  ____  __  _   ____   _       _____  ____  _____  __  __   ____ ");
+			System.out.println("|  \\| | / () \\|_   _|| |/ () \\|  \\| | / () \\ | |__    | ()_)/ () \\ | () )|  |/  / (_ (_`");
+			System.out.println("|_|\\__|/__/\\__\\ |_|  |_|\\____/|_|\\__|/__/\\__\\|____|   |_|  /__/\\__\\|_|\\_\\|__|\\__\\.__)__)");
+			System.out.println();
+
+		}
 	}
-
-
-	private void displayBanner() {
-
-		System.out.println(" __  _   ____  _____  _  ____  __  _   ____   _       _____  ____  _____  __  __   ____ ");
-		System.out.println("|  \\| | / () \\|_   _|| |/ () \\|  \\| | / () \\ | |__    | ()_)/ () \\ | () )|  |/  / (_ (_`");
-		System.out.println("|_|\\__|/__/\\__\\ |_|  |_|\\____/|_|\\__|/__/\\__\\|____|   |_|  /__/\\__\\|_|\\_\\|__|\\__\\.__)__)");
-		System.out.println();
-
-	}
-}

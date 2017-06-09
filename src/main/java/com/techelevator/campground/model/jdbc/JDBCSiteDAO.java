@@ -50,7 +50,7 @@ public class JDBCSiteDAO implements SiteDAO {
 						+ " OR (?  BETWEEN reservation.from_date AND reservation.to_date) "
 						+ "OR (reservation.from_date BETWEEN ? AND ?) "
 						+ "OR (reservation.to_date BETWEEN ? AND ?))) "
-						+ " LIMIT 5; )"; 
+						+ " LIMIT 5; "; 
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlAvailableSites, campgroundId, campgroundId, 
 				arrivalDate, departureDate, arrivalDate, departureDate,arrivalDate, departureDate) ;
 		while(results.next()) {
@@ -70,7 +70,7 @@ public class JDBCSiteDAO implements SiteDAO {
 		site.setMaxOccupancy(results.getInt("max_occupancy"));
 		site.setAccessible(results.getBoolean("accessible"));
 		site.setMaxRvLength(results.getInt("max_rv_length"));
-		site.setUtilities(results.getBoolean("utilites"));
+		site.setUtilities(results.getBoolean("utilities"));
 		return site;
 	}
 

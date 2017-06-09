@@ -42,6 +42,15 @@ public class Menu {
 		}
 		return choice;
 	}
+	public Integer getInputNumberFromUser(){
+		String userInput = in.nextLine();
+			return Integer.valueOf(userInput);
+	}
+	public String getReservationName(){
+		String userInput = in.nextLine();
+		return userInput;
+				
+	}
 	public LocalDate getDateFromUser(){
 		String userInput = in.nextLine();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");

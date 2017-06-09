@@ -3,10 +3,10 @@ package com.techelevator.campground.model;
 public class Site {
 	private Long siteId;
 	private Long campgroundId;
-	private int siteNumber;
-	private int maxOccupancy;
+	private Integer siteNumber;
+	private Integer maxOccupancy;
 	private boolean accessible;
-	private int maxRvLength;
+	private Integer maxRvLength;
 	private boolean utilities;
 	
 	public Long getSiteId() {
@@ -25,40 +25,61 @@ public class Site {
 		this.campgroundId = campgroundId;
 	}
 	
-	public int getSiteNumber() {
+	public Integer getSiteNumber() {
 		return siteNumber;
 	}
 	
-	public void setSiteNumber(int siteNumber) {
+	public void setSiteNumber(Integer siteNumber) {
 		this.siteNumber = siteNumber;
 	}
 	
-	public int getMaxOccupancy() {
+	public Integer getMaxOccupancy() {
 		return maxOccupancy;
 	}
 	
-	public void setMaxOccupancy(int maxOccupancy) {
+	public void setMaxOccupancy(Integer maxOccupancy) {
 		this.maxOccupancy = maxOccupancy;
 	}
 	
 	public boolean isAccessible() {
+		
 		return accessible;
 	}
-	
+	public String isAccessibleToString(boolean accesible){
+		if(accesible){
+			return "Yes";
+		}else{
+			return "No";
+		}
+	}
 	public void setAccessible(boolean accessible) {
 		this.accessible = accessible;
 	}
 	
-	public int getMaxRvLength() {
+	public Integer getMaxRvLength() {
 		return maxRvLength;
 	}
+	public String maxRVToString(Integer maxRvLength){
+		if(maxRvLength == 0){
+			return "N/A";
+		}else{
+			return maxRvLength.toString();
+		}
+	}
 	
-	public void setMaxRvLength(int maxRvLength) {
+	public void setMaxRvLength(Integer maxRvLength) {
 		this.maxRvLength = maxRvLength;
 	}
 	
 	public boolean isUtilities() {
 		return utilities;
+	}
+	public String isUtilitiesToString(boolean utilities){
+		if(utilities){
+			return "Yes";
+		}else{
+			return "N/A";
+		}
 	}
 	
 	public void setUtilities(boolean utilities) {

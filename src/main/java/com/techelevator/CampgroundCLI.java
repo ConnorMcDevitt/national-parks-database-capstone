@@ -23,10 +23,10 @@ import com.techelevator.campground.view.Menu;
 
 public class CampgroundCLI {
 
-	private static final String PARK_MENU_OPTION_VIEW_CAMPGROUNDS = "View Campgrounds";
-	private static final String PARK_MENU_OPTION_SEARCH_RESERVATION = "Search For Reservation";
-	private static final String PARK_MENU_OPTION_RETURN = "Return to Previous Screen";
-	private static final String[] PARK_MENU_OPTIONS = new String[] { PARK_MENU_OPTION_VIEW_CAMPGROUNDS, PARK_MENU_OPTION_SEARCH_RESERVATION, PARK_MENU_OPTION_RETURN };
+	private static final String VIEW_PARKS_INTERFACE_VIEW_CAMPGROUNDS = "View Campgrounds";
+	private static final String VIEW_PARKS_INTERFACE_SEARCH_RESERVATION = "Search For Reservation";
+	private static final String VIEW_PARKS_INTERFACE_RETURN = "Return to Previous Screen";
+	private static final String[] PARK_MENU_OPTIONS = new String[] { VIEW_PARKS_INTERFACE_VIEW_CAMPGROUNDS, VIEW_PARKS_INTERFACE_SEARCH_RESERVATION, VIEW_PARKS_INTERFACE_RETURN };
 
 	private static final String CAMPGROUND_MENU_OPTION_SEARCH_RESERVATION = "Search For Available Reservation";
 	private static final String CAMPGROUND_MENU_OPTION_RETURN = "Return to Previous Screen";
@@ -93,13 +93,13 @@ public class CampgroundCLI {
 
 			printHeading("Select A Command");
 			String choice = (String)menu.getChoiceFromOptions(PARK_MENU_OPTIONS);
-			if(choice.equals(PARK_MENU_OPTION_VIEW_CAMPGROUNDS)) {
+			if(choice.equals(VIEW_PARKS_INTERFACE_VIEW_CAMPGROUNDS)) {
 				handleViewCampground(park);
 				campgroundmenu(park);
-			} else if (choice.equals(PARK_MENU_OPTION_SEARCH_RESERVATION)) {
+			} else if (choice.equals(VIEW_PARKS_INTERFACE_SEARCH_RESERVATION)) {
 				System.out.println();
 				System.out.println("This function is a bonus functionality and is not yet implemented.");
-			} else if (choice.equals(PARK_MENU_OPTION_RETURN)) {
+			} else if (choice.equals(VIEW_PARKS_INTERFACE_RETURN)) {
 				break;
 
 			}
